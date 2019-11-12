@@ -195,7 +195,11 @@ module.exports = async function App(context) {
       const score = `${visitor.abbreviation} ${visitor.score} : ${home.abbreviation} ${home.score}`;
       return score;
     });
-    await context.sendText(`${timestamp.format('YYYY/MM/DD')}\n${scores.join('\n')}`);
+    if (scores.length === 0) {
+      await context.sendText(`There's no game at ${timestamp.format('YYYY/MM/DD')}`);
+    } else {
+      await context.sendText(`${timestamp.format('YYYY/MM/DD')}\n${scores.join('\n')}`);
+    }
     return;
   } else {
     await context.sendText(
