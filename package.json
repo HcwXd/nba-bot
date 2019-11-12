@@ -9,7 +9,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "bottender": "1.0.0-alpha.27"
+    "bottender": "1.0.0-alpha.27",
+    "moment": "^2.24.0",
+    "nba-stats-client": "^1.0.0"
   },
   "devDependencies": {
     "eslint": "^6.6.0",
