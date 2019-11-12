@@ -172,23 +172,34 @@ const dataYesterDay = {
 };
 
 module.exports = async function App(context) {
-  const timestamp = moment()
-    .startOf('day')
-    .add(-1, 'days');
+  if (
+    context.event.isText &&
+    (isNaN(context.event.text) || !moment(context.event.text, 'YYYY/M/D', true).isValid())
+  ) {
+    const timestamp = isNaN(context.event.text)
+      ? moment(context.event.text, 'YYYY/M/D')
+      : moment()
+          .startOf('day')
+          .add(+context.event.text, 'days');
 
-  const gamesData = await getGames({
-    year: timestamp.format('YYYY'),
-    month: timestamp.format('M'),
-    day: timestamp.format('D'),
-  });
+    const gamesData = await getGames({
+      year: timestamp.format('YYYY'),
+      month: timestamp.format('M'),
+      day: timestamp.format('D'),
+    });
 
-  const { sports_content } = gamesData;
-  const { games } = sports_content;
-  const { game } = games;
-  const scores = game.map(({ visitor, home }) => {
-    const score = `${visitor.abbreviation} ${visitor.score} : ${home.abbreviation} ${home.score}`;
-    return score;
-  });
-
-  await context.sendText(`${timestamp.format('YYYY/MM/DD')}\n${scores.join('\n')}`);
+    const { sports_content } = gamesData;
+    const { games } = sports_content;
+    const { game } = games;
+    const scores = game.map(({ visitor, home }) => {
+      const score = `${visitor.abbreviation} ${visitor.score} : ${home.abbreviation} ${home.score}`;
+      return score;
+    });
+    await context.sendText(`${timestamp.format('YYYY/MM/DD')}\n${scores.join('\n')}`);
+    return;
+  } else {
+    await context.sendText(
+      `Please enter a date like 2019/11/11.\n You can also enter a number to indicate some day before now.\nFor example, -1 indicates yesterday and -2 indicates the day before yesterday.`
+    );
+  }
 };
